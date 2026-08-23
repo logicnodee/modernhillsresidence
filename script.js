@@ -20,6 +20,9 @@ const UNIT_DATA = {
     lt: "60 m²",
     kt: "2",
     km: "1",
+    rk: "1",
+    dapur: "1",
+    sisaLahan: false,
     img: "type standard.png",
     specs: [
       { label: "Pondasi", val: "Batu kali + Struktur Beton Bertulang" },
@@ -45,6 +48,9 @@ const UNIT_DATA = {
     lt: "66 m²",
     kt: "2",
     km: "1",
+    rk: "1",
+    dapur: "1",
+    sisaLahan: true,
     img: "type medium.jpeg",
     specs: [
       { label: "Pondasi", val: "Batu kali + Struktur Beton Bertulang" },
@@ -70,6 +76,9 @@ const UNIT_DATA = {
     lt: "72 m²",
     kt: "2",
     km: "1",
+    rk: "1",
+    dapur: "1",
+    sisaLahan: true,
     img: "type premium.png",
     specs: [
       { label: "Pondasi", val: "Batu kali + Footplat Beton Bertulang" },
@@ -92,7 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initNavbarScroll();
   initMobileMenu();
   initSmoothScroll();
-  calculateKpr();
   initHeroCounter();
   setDefaultSurveyDate();
 });
@@ -240,6 +248,15 @@ function openDetailModal(typeKey) {
   document.getElementById("mLt").innerText = data.lt;
   document.getElementById("mKt").innerText = data.kt;
   document.getElementById("mKm").innerText = data.km;
+  document.getElementById("mRk").innerText = data.rk || "1";
+  document.getElementById("mDp").innerText = data.dapur || "1";
+  
+  const sisaLahanContainer = document.getElementById("mSisaLahanContainer");
+  if (data.sisaLahan) {
+    sisaLahanContainer.style.display = "flex";
+  } else {
+    sisaLahanContainer.style.display = "none";
+  }
 
   // Populate Specs List
   const specListEl = document.querySelector(".spec-tech-list");
@@ -247,30 +264,7 @@ function openDetailModal(typeKey) {
     specListEl.innerHTML = data.specs.map(s => `<li><strong>${s.label}:</strong> ${s.val}</li>`).join("");
   }
 
-  // Populate Finance Breakdown
-  document.getElementById("fPrice").innerText = data.priceText;
-  document.getElementById("fKpr").innerText = formatRupiah(data.kprVal);
-  document.getElementById("fDp").innerText = formatRupiah(data.dpVal);
-  document.getElementById("fMonthly").innerText = data.monthlyText;
-
-  switchTab("specs");
   openModal("modalDetail");
-}
-
-function switchTab(tabName) {
-  const tabBtns = document.querySelectorAll(".tab-btn");
-  const tabPanes = document.querySelectorAll(".tab-pane");
-
-  tabBtns.forEach(btn => btn.classList.remove("active"));
-  tabPanes.forEach(pane => pane.classList.remove("active"));
-
-  if (tabName === "specs") {
-    tabBtns[0].classList.add("active");
-    document.getElementById("paneSpecs").classList.add("active");
-  } else {
-    tabBtns[1].classList.add("active");
-    document.getElementById("paneFinance").classList.add("active");
-  }
 }
 
 function chatTypeWa() {
@@ -331,75 +325,6 @@ function submitSurveyForm(e) {
   closeModal("modalSurvey");
 }
 
-// ================= KPR CALCULATOR =================
-function updateKprFromType() {
-  const typeSelect = document.getElementById("kprTypeSelect");
-  const price = parseInt(typeSelect.value);
-  const selectedOption = typeSelect.options[typeSelect.selectedIndex];
-  const defaultDp = parseInt(selectedOption.getAttribute("data-dp")) || (price * 0.15);
-
-  const priceInput = document.getElementById("kprPriceInput");
-  const dpInput = document.getElementById("kprDpInput");
-
-  priceInput.value = price;
-  dpInput.max = Math.floor(price * 0.5);
-  dpInput.value = defaultDp;
-
-  calculateKpr();
-}
-
-function calculateKpr() {
-  const price = parseInt(document.getElementById("kprPriceInput").value) || 198000000;
-  const dp = parseInt(document.getElementById("kprDpInput").value) || 32000000;
-  const tenorYears = parseInt(document.getElementById("kprTenorSelect").value) || 20;
-  const interestRate = parseFloat(document.getElementById("kprInterestInput").value) || 5.5;
-
-  // Format Labels
-  document.getElementById("kprPriceFormatted").innerText = formatRupiah(price);
-  document.getElementById("kprDpFormatted").innerText = formatRupiah(dp);
-
-  const dpPercent = Math.round((dp / price) * 100);
-  document.getElementById("kprDpPercent").innerText = `${dpPercent}%`;
-
-  // Plafon Loan
-  const plafon = Math.max(0, price - dp);
-  document.getElementById("kprPlafonResult").innerText = formatRupiah(plafon);
-  document.getElementById("kprDpResult").innerText = `${formatRupiah(dp)} (${dpPercent}%)`;
-  document.getElementById("kprTenorResult").innerText = `${tenorYears} Tahun (${tenorYears * 12} Bulan)`;
-
-  // Monthly Installment formula (Annuity standard)
-  const monthlyRate = (interestRate / 100) / 12;
-  const totalMonths = tenorYears * 12;
-
-  let monthlyInstallment = 0;
-  if (monthlyRate > 0) {
-    monthlyInstallment = (plafon * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / 
-                         (Math.pow(1 + monthlyRate, totalMonths) - 1);
-  } else {
-    monthlyInstallment = plafon / totalMonths;
-  }
-
-  document.getElementById("kprMonthlyResult").innerText = formatNumber(Math.round(monthlyInstallment));
-}
-
-function consultKprWa() {
-  const price = document.getElementById("kprPriceFormatted").innerText;
-  const dp = document.getElementById("kprDpFormatted").innerText;
-  const tenor = document.getElementById("kprTenorSelect").value;
-  const monthly = document.getElementById("kprMonthlyResult").innerText;
-  const plafon = document.getElementById("kprPlafonResult").innerText;
-
-  const message = `Halo Admin Modern Hills Residence, saya ingin konsultasi pengajuan KPR dengan simulasi:\n` +
-    `- Harga Rumah: ${price}\n` +
-    `- Uang Muka (DP): ${dp}\n` +
-    `- Plafon KPR: ${plafon}\n` +
-    `- Tenor: ${tenor} Tahun\n` +
-    `- Estimasi Angsuran: Rp ${monthly}/bulan\n\n` +
-    `Mohon info syarat berkas dan bank rekanan yang tersedia.`;
-
-  const waUrl = `https://wa.me/${WA_PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
-  window.open(waUrl, "_blank");
-}
 
 // ================= FAQ ACCORDION =================
 function toggleFaq(btnElement) {
