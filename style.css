@@ -946,10 +946,16 @@ section {
   transition: var(--transition);
   display: flex;
   flex-direction: column;
+  /* GPU Acceleration fixes for Android crash/glitch */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
 }
 
 .facility-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-4px) translateZ(0);
   border-color: var(--border-gold);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
 }
@@ -959,6 +965,8 @@ section {
   height: 105px;
   overflow: hidden;
   background: #090e17;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .facility-img {
@@ -966,10 +974,12 @@ section {
   height: 100%;
   object-fit: cover;
   transition: transform 0.5s ease;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .facility-card:hover .facility-img {
-  transform: scale(1.08);
+  transform: scale(1.08) translateZ(0);
 }
 
 .facility-content {
