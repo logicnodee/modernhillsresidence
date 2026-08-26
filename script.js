@@ -4,7 +4,7 @@
  */
 
 // Global Configuration
-const WA_PHONE_NUMBER = "6281234567890"; // Ganti dengan nomor WhatsApp Marketing yang aktif
+const WA_PHONE_NUMBER = "6289682088820"; // Nomor WhatsApp Marketing Modern Hills Residence (+62 896-8208-8820)
 
 // Unit Data Repository
 const UNIT_DATA = {
