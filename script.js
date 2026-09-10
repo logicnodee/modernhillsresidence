@@ -11,11 +11,8 @@ const UNIT_DATA = {
   standard: {
     badge: "TYPE STANDARD",
     title: "Type Standard 36 / 60",
-    priceText: "Rp 198.000.000",
-    priceVal: 198000000,
-    kprVal: 166000000,
-    dpVal: 32000000,
-    monthlyText: "Rp 1.139.000 / bln",
+    dimension: "6 x 10 m",
+    promoText: "Angsuran 1 Juta flat sampai lunas",
     lb: "36 m²",
     lt: "60 m²",
     kt: "2",
@@ -24,26 +21,24 @@ const UNIT_DATA = {
     dapur: "1",
     sisaLahan: false,
     img: "type standard.png",
+    floorplanImg: "assets/6x10 (standart).png",
     specs: [
-      { label: "Pondasi", val: "Batu kali + Struktur Beton Bertulang" },
-      { label: "Dinding", val: "Bata Merah / Hebel diplester, aci & cat exterior Weathercoat" },
-      { label: "Lantai", val: "Granit Tile 60x60 cm" },
+      { label: "Pondasi", val: "Batu Kali" },
+      { label: "Dinding", val: "Bata Merah / Hebel diplester & diaci" },
+      { label: "Lantai", val: "Granit Tile 40x40 cm" },
       { label: "Rangka Atap", val: "Baja Ringan Galvalum SNI" },
-      { label: "Genteng", val: "Beton Flat Minimalis" },
-      { label: "Kusen & Pintu", val: "Aluminium Powder Coating & Pintu Kayu Solid" },
-      { label: "Kamar Mandi", val: "Kloset Duduk & Shower Set Standard" },
-      { label: "Listrik", val: "PLN 1.300 Watt" },
-      { label: "Sumber Air", val: "Air Bersih PDAM / Sumur Bor Cluster" }
+      { label: "Genteng", val: "Spandex Pasir / Alderon" },
+      { label: "Kusen & Pintu", val: "Aluminium & Pintu Kayu" },
+      { label: "Kamar Mandi", val: "Kloset Duduk & Shower Set" },
+      { label: "Listrik", val: "PLN 900 Watt" },
+      { label: "Sumber Air", val: "Sumur Bor Artesis" }
     ]
   },
   medium: {
     badge: "TYPE MEDIUM",
     title: "Type Medium 36 / 66",
-    priceText: "Rp 213.000.000",
-    priceVal: 213000000,
-    kprVal: 166000000,
-    dpVal: 47000000,
-    monthlyText: "Rp 1.139.000 / bln",
+    dimension: "6 x 11 m",
+    promoText: "Angsuran 1 Juta flat sampai lunas",
     lb: "36 m²",
     lt: "66 m²",
     kt: "2",
@@ -52,26 +47,24 @@ const UNIT_DATA = {
     dapur: "1",
     sisaLahan: true,
     img: "type medium.jpeg",
+    floorplanImg: "assets/6x11 (medium).jpg",
     specs: [
-      { label: "Pondasi", val: "Batu kali + Struktur Beton Bertulang" },
-      { label: "Dinding", val: "Bata Merah / Hebel diplester, aci & cat Jotun/Dulux" },
-      { label: "Lantai", val: "Granit Tile 60x60 cm Luxury Series" },
+      { label: "Pondasi", val: "Batu Kali" },
+      { label: "Dinding", val: "Bata Merah / Hebel diplester & diaci" },
+      { label: "Lantai", val: "Granit Tile 40x40 cm" },
       { label: "Rangka Atap", val: "Baja Ringan Galvalum SNI" },
-      { label: "Genteng", val: "Beton Flat Minimalis Presisi" },
-      { label: "Kusen & Pintu", val: "Aluminium Powder Coating & Pintu Engineering Wood" },
-      { label: "Kamar Mandi", val: "Kloset Duduk & Shower Set Minimalis" },
-      { label: "Listrik", val: "PLN 1.300 Watt" },
-      { label: "Sumber Air", val: "Air Bersih PDAM / Sumur Bor Cluster" }
+      { label: "Genteng", val: "Spandex Pasir / Alderon" },
+      { label: "Kusen & Pintu", val: "Aluminium & Pintu Kayu" },
+      { label: "Kamar Mandi", val: "Kloset Duduk & Shower Set" },
+      { label: "Listrik", val: "PLN 900 Watt" },
+      { label: "Sumber Air", val: "Sumur Bor Artesis" }
     ]
   },
   premium: {
     badge: "TYPE PREMIUM",
     title: "Type Premium 40 / 72",
-    priceText: "Rp 250.000.000",
-    priceVal: 250000000,
-    kprVal: 200000000,
-    dpVal: 50000000,
-    monthlyText: "Rp 1.370.000 / bln",
+    dimension: "6.6 x 11 m",
+    promoText: "Angsuran 1 Juta flat sampai lunas",
     lb: "40 m²",
     lt: "72 m²",
     kt: "2",
@@ -80,28 +73,29 @@ const UNIT_DATA = {
     dapur: "1",
     sisaLahan: true,
     img: "type premium.png",
+    floorplanImg: "assets/6.6x11 (premium).jpg",
     specs: [
-      { label: "Pondasi", val: "Batu kali + Footplat Beton Bertulang" },
-      { label: "Dinding", val: "Bata Ringan / Merah Premium Finishing Cat Jotun" },
-      { label: "Lantai", val: "Granit Tile 60x60 cm Polished Glazed" },
-      { label: "Rangka Atap", val: "Baja Ringan Galvalum SNI Extra Strong" },
-      { label: "Genteng", val: "Beton Flat Minimalis Premium Coating" },
-      { label: "Kusen & Pintu", val: "Aluminium Powder Coating Tebal & Smart Door Ready" },
-      { label: "Kamar Mandi", val: "Kloset Duduk Premium, Shower Set & Exhaust Fan" },
-      { label: "Listrik", val: "PLN 1.300 / 2.200 Watt" },
-      { label: "Sumber Air", val: "Air Bersih PDAM / Sumur Bor Cluster" }
+      { label: "Pondasi", val: "Batu Kali" },
+      { label: "Dinding", val: "Bata Merah / Hebel diplester & diaci" },
+      { label: "Lantai", val: "Granit Tile 40x40 cm" },
+      { label: "Rangka Atap", val: "Baja Ringan Galvalum SNI" },
+      { label: "Genteng", val: "Alderon" },
+      { label: "Kusen & Pintu", val: "Aluminium & Pintu Kayu" },
+      { label: "Kamar Mandi", val: "Kloset Duduk & Shower Set" },
+      { label: "Listrik", val: "PLN 1.300 Watt" },
+      { label: "Sumber Air", val: "Sumur Bor Artesis" }
     ]
   }
 };
 
 let currentSelectedTypeKey = "standard";
+let currentModalView = "fasad";
 
 // ================= INITIALIZATION =================
 document.addEventListener("DOMContentLoaded", () => {
   initNavbarScroll();
   initMobileMenu();
   initSmoothScroll();
-  initHeroCounter();
   setDefaultSurveyDate();
 });
 
@@ -179,27 +173,6 @@ function initSmoothScroll() {
   });
 }
 
-// ================= NUMBER COUNTER ANIMATION =================
-function initHeroCounter() {
-  const counterElem = document.getElementById("heroPriceCounter");
-  if (!counterElem) return;
-
-  let count = 0;
-  const target = 198;
-  const duration = 1200;
-  const stepTime = Math.abs(Math.floor(duration / target));
-
-  const timer = setInterval(() => {
-    count += 3;
-    if (count >= target) {
-      counterElem.innerText = target;
-      clearInterval(timer);
-    } else {
-      counterElem.innerText = count;
-    }
-  }, stepTime);
-}
-
 // ================= MODAL HANDLERS =================
 function openModal(modalId) {
   const modal = document.getElementById(modalId);
@@ -234,16 +207,49 @@ document.addEventListener("keydown", (e) => {
 });
 
 // ================= DETAIL TYPE MODAL =================
-function openDetailModal(typeKey) {
+function switchModalImg(viewType) {
+  currentModalView = viewType;
+  const data = UNIT_DATA[currentSelectedTypeKey];
+  if (!data) return;
+
+  const imgEl = document.getElementById("mImg");
+  const tabFasadBtn = document.getElementById("tabFasadBtn");
+  const tabDenahBtn = document.getElementById("tabDenahBtn");
+
+  if (viewType === "denah") {
+    imgEl.src = data.floorplanImg;
+    imgEl.alt = `Denah Ukuran ${data.dimension} - ${data.title}`;
+    if (tabDenahBtn) tabDenahBtn.classList.add("active");
+    if (tabFasadBtn) tabFasadBtn.classList.remove("active");
+  } else {
+    imgEl.src = data.img;
+    imgEl.alt = `Fasad ${data.title}`;
+    if (tabFasadBtn) tabFasadBtn.classList.add("active");
+    if (tabDenahBtn) tabDenahBtn.classList.remove("active");
+  }
+}
+
+function openDetailModal(typeKey, initialView = "fasad") {
   const data = UNIT_DATA[typeKey];
   if (!data) return;
 
   currentSelectedTypeKey = typeKey;
+  currentModalView = initialView;
 
   document.getElementById("mBadge").innerText = data.badge;
   document.getElementById("mTitle").innerText = data.title;
-  document.getElementById("mPrice").innerText = data.priceText;
-  document.getElementById("mImg").src = data.img;
+  
+  const mPromo = document.getElementById("mPromo");
+  if (mPromo) mPromo.innerText = data.promoText;
+
+  const mDim = document.getElementById("mDim");
+  if (mDim) mDim.innerText = `Dimensi: ${data.dimension}`;
+
+  const tabDenahLbl = document.getElementById("tabDenahLbl");
+  if (tabDenahLbl) tabDenahLbl.innerText = `Denah & Ukuran (${data.dimension})`;
+
+  switchModalImg(initialView);
+
   document.getElementById("mLb").innerText = data.lb;
   document.getElementById("mLt").innerText = data.lt;
   document.getElementById("mKt").innerText = data.kt;
@@ -269,7 +275,7 @@ function openDetailModal(typeKey) {
 
 function chatTypeWa() {
   const data = UNIT_DATA[currentSelectedTypeKey];
-  const message = `Halo Admin Modern Hills Residence, saya ingin menanyakan informasi lebih lanjut mengenai *${data.title}* seharga *${data.priceText}*. Mohon dibantu informasi ketersediaan unit dan jadwal survey.`;
+  const message = `Halo Admin Modern Hills Residence, saya tertarik dengan *${data.title}* (Dimensi ${data.dimension}) dengan promo *${data.promoText}*. Mohon informasi ketersediaan unit dan jadwal survey lokasi. Terima kasih.`;
   const waUrl = `https://wa.me/${WA_PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
   window.open(waUrl, "_blank");
 }
