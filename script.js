@@ -97,6 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initMobileMenu();
   initSmoothScroll();
   setDefaultSurveyDate();
+  initLightboxPanZoom();
 });
 
 // ================= NAVBAR & SCROLL =================
@@ -237,6 +238,29 @@ function switchCardPreview(e, typeKey, view) {
 let currentLightboxTypeKey = "standard";
 let currentLightboxView = "fasad";
 let currentLightboxZoom = 1;
+let currentLightboxPanX = 0;
+let currentLightboxPanY = 0;
+let isPanning = false;
+let startPanX = 0;
+let startPanY = 0;
+
+function applyLightboxTransform(smooth = false) {
+  const lbImg = document.getElementById("lightboxImg");
+  const lbBody = document.querySelector(".lightbox-body");
+  if (!lbImg) return;
+
+  if (smooth) {
+    lbImg.style.transition = "transform 0.18s cubic-bezier(0.2, 0, 0, 1)";
+  } else {
+    lbImg.style.transition = "none";
+  }
+
+  lbImg.style.transform = `translate(${currentLightboxPanX}px, ${currentLightboxPanY}px) scale(${currentLightboxZoom})`;
+
+  if (lbBody) {
+    lbBody.style.cursor = isPanning ? "grabbing" : (currentLightboxZoom > 1.05 ? "grab" : "grab");
+  }
+}
 
 function openLightbox(src = null, title = null, typeKey = null, view = null) {
   if (typeKey) {
@@ -324,20 +348,137 @@ function openCardLightbox(btn, typeKey) {
   openLightbox(null, null, typeKey, view);
 }
 
-function zoomLightbox(factor) {
-  const lbImg = document.getElementById("lightboxImg");
-  if (!lbImg) return;
-  currentLightboxZoom = Math.min(Math.max(currentLightboxZoom * factor, 0.6), 3.5);
-  lbImg.style.transform = `scale(${currentLightboxZoom})`;
+function zoomLightbox(factor, centerX = null, centerY = null) {
+  const oldZoom = currentLightboxZoom;
+  currentLightboxZoom = Math.min(Math.max(currentLightboxZoom * factor, 0.7), 4.5);
+  
+  if (centerX !== null && centerY !== null && oldZoom !== 0) {
+    const scaleRatio = currentLightboxZoom / oldZoom;
+    currentLightboxPanX = centerX - (centerX - currentLightboxPanX) * scaleRatio;
+    currentLightboxPanY = centerY - (centerY - currentLightboxPanY) * scaleRatio;
+  }
+
+  if (currentLightboxZoom <= 1.0) {
+    currentLightboxPanX = 0;
+    currentLightboxPanY = 0;
+  }
+  
+  applyLightboxTransform(true);
 }
 
 function resetLightboxZoom() {
-  const lbImg = document.getElementById("lightboxImg");
   currentLightboxZoom = 1;
-  if (lbImg) lbImg.style.transform = "scale(1)";
+  currentLightboxPanX = 0;
+  currentLightboxPanY = 0;
+  applyLightboxTransform(true);
 }
 
-// Keyboard arrow navigation listener for Lightbox
+// Lightbox interactive Drag-to-Pan and Mouse Wheel Zoom
+function initLightboxPanZoom() {
+  const lbBody = document.querySelector(".lightbox-body");
+  const lbImg = document.getElementById("lightboxImg");
+  if (!lbBody || !lbImg) return;
+
+  // Prevent default drag image behavior
+  lbImg.addEventListener("dragstart", (e) => e.preventDefault());
+
+  // Mouse wheel zoom
+  lbBody.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const rect = lbBody.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left - rect.width / 2;
+    const mouseY = e.clientY - rect.top - rect.height / 2;
+    const factor = e.deltaY < 0 ? 1.2 : 0.83;
+    zoomLightbox(factor, mouseX, mouseY);
+  }, { passive: false });
+
+  // Mouse down - start drag pan
+  lbBody.addEventListener("mousedown", (e) => {
+    if (e.button !== 0) return; // Only left mouse button
+    isPanning = true;
+    startPanX = e.clientX - currentLightboxPanX;
+    startPanY = e.clientY - currentLightboxPanY;
+    lbBody.style.cursor = "grabbing";
+    e.preventDefault();
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    if (!isPanning) return;
+    currentLightboxPanX = e.clientX - startPanX;
+    currentLightboxPanY = e.clientY - startPanY;
+    applyLightboxTransform(false);
+  });
+
+  window.addEventListener("mouseup", () => {
+    if (isPanning) {
+      isPanning = false;
+      const body = document.querySelector(".lightbox-body");
+      if (body) {
+        body.style.cursor = "grab";
+      }
+    }
+  });
+
+  // Mobile Touch Pan & Pinch Zoom
+  let touchStartDist = 0;
+  let touchStartZoom = 1;
+  let isTouching = false;
+
+  lbBody.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 1) {
+      isTouching = true;
+      startPanX = e.touches[0].clientX - currentLightboxPanX;
+      startPanY = e.touches[0].clientY - currentLightboxPanY;
+    } else if (e.touches.length === 2) {
+      isTouching = false;
+      touchStartDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      touchStartZoom = currentLightboxZoom;
+    }
+  }, { passive: true });
+
+  lbBody.addEventListener("touchmove", (e) => {
+    if (e.touches.length === 1 && isTouching) {
+      currentLightboxPanX = e.touches[0].clientX - startPanX;
+      currentLightboxPanY = e.touches[0].clientY - startPanY;
+      applyLightboxTransform(false);
+    } else if (e.touches.length === 2 && touchStartDist > 0) {
+      const currentDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const factor = currentDist / touchStartDist;
+      currentLightboxZoom = Math.min(Math.max(touchStartZoom * factor, 0.7), 4.5);
+      applyLightboxTransform(false);
+    }
+  }, { passive: true });
+
+  lbBody.addEventListener("touchend", (e) => {
+    if (e.touches.length === 0) {
+      isTouching = false;
+      touchStartDist = 0;
+      if (currentLightboxZoom < 0.9) {
+        resetLightboxZoom();
+      }
+    }
+  }, { passive: true });
+
+  // Double click to toggle 2x zoom / reset
+  lbBody.addEventListener("dblclick", (e) => {
+    if (currentLightboxZoom > 1.2) {
+      resetLightboxZoom();
+    } else {
+      const rect = lbBody.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left - rect.width / 2;
+      const mouseY = e.clientY - rect.top - rect.height / 2;
+      zoomLightbox(2.0, mouseX, mouseY);
+    }
+  });
+}
+
+// Keyboard navigation listener for Lightbox
 document.addEventListener("keydown", (e) => {
   const lbModal = document.getElementById("modalLightbox");
   if (!lbModal || !lbModal.classList.contains("active")) return;
