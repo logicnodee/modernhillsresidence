@@ -20,7 +20,7 @@ const UNIT_DATA = {
     rk: "1",
     dapur: "1",
     sisaLahan: false,
-    img: "type standard.png",
+    img: "type medium.jpeg",
     floorplanImg: "assets/6x10 (standart).png",
     specs: [
       { label: "Pondasi", val: "Batu Kali" },
@@ -206,6 +206,155 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+// ================= UNIT CARD PREVIEW SWITCHER =================
+function switchCardPreview(e, typeKey, view) {
+  if (e) e.stopPropagation();
+  const card = document.querySelector(`.unit-card[data-type="${typeKey}"]`);
+  if (!card) return;
+  
+  const imgEl = card.querySelector(".unit-img");
+  const tabs = card.querySelectorAll(".card-tab");
+  const data = UNIT_DATA[typeKey];
+  if (!data || !imgEl) return;
+
+  tabs.forEach(t => t.classList.remove("active"));
+  if (e && e.currentTarget) {
+    e.currentTarget.classList.add("active");
+  }
+
+  if (view === "denah") {
+    imgEl.src = data.floorplanImg;
+    imgEl.classList.add("is-denah");
+    imgEl.alt = `Denah ${data.title}`;
+  } else {
+    imgEl.src = data.img;
+    imgEl.classList.remove("is-denah");
+    imgEl.alt = `Tampak Depan ${data.title}`;
+  }
+}
+
+// ================= LIGHTBOX HD VIEWER =================
+let currentLightboxTypeKey = "standard";
+let currentLightboxView = "fasad";
+let currentLightboxZoom = 1;
+
+function openLightbox(src = null, title = null, typeKey = null, view = null) {
+  if (typeKey) {
+    currentLightboxTypeKey = typeKey;
+  } else if (currentSelectedTypeKey) {
+    currentLightboxTypeKey = currentSelectedTypeKey;
+  } else {
+    currentLightboxTypeKey = "standard";
+  }
+  
+  if (view) {
+    currentLightboxView = view;
+  } else if (currentModalView) {
+    currentLightboxView = currentModalView;
+  } else {
+    currentLightboxView = "fasad";
+  }
+
+  updateLightboxContent();
+  resetLightboxZoom();
+  openModal("modalLightbox");
+}
+
+function updateLightboxContent() {
+  const data = UNIT_DATA[currentLightboxTypeKey];
+  if (!data) return;
+
+  const lbImg = document.getElementById("lightboxImg");
+  const lbTitle = document.getElementById("lightboxTitle");
+  const waBtn = document.getElementById("lightboxWaBtn");
+  const btnFasad = document.getElementById("lbBtnFasad");
+  const btnDenah = document.getElementById("lbBtnDenah");
+  const denahLbl = document.getElementById("lbDenahLabel");
+  const lbBody = document.querySelector(".lightbox-body");
+
+  if (denahLbl) denahLbl.innerText = `Denah (${data.dimension})`;
+
+  if (currentLightboxView === "denah") {
+    if (lbImg) {
+      lbImg.src = data.floorplanImg;
+      lbImg.alt = `Denah & Ukuran ${data.title} (${data.dimension})`;
+    }
+    if (lbTitle) lbTitle.innerText = `Denah & Ukuran ${data.title} (${data.dimension})`;
+    if (btnDenah) btnDenah.classList.add("active");
+    if (btnFasad) btnFasad.classList.remove("active");
+    if (lbBody) lbBody.classList.add("is-denah");
+  } else {
+    if (lbImg) {
+      lbImg.src = data.img;
+      lbImg.alt = `Tampak Depan ${data.title}`;
+    }
+    if (lbTitle) lbTitle.innerText = `Tampak Depan ${data.title}`;
+    if (btnFasad) btnFasad.classList.add("active");
+    if (btnDenah) btnDenah.classList.remove("active");
+    if (lbBody) lbBody.classList.remove("is-denah");
+  }
+
+  const msg = `Halo Admin Modern Hills Residence, saya ingin konsultasi mengenai ${currentLightboxView === "denah" ? "Denah & Ukuran" : "Tampak Depan"} *${data.title}* (Dimensi ${data.dimension}). Mohon info ketersediaan unit.`;
+  if (waBtn) waBtn.href = `https://wa.me/${WA_PHONE_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
+function setLightboxView(view) {
+  currentLightboxView = view;
+  resetLightboxZoom();
+  updateLightboxContent();
+}
+
+function lightboxNav(dir) {
+  // Toggle between fasad and denah seamlessly
+  if (currentLightboxView === "fasad") {
+    currentLightboxView = "denah";
+  } else {
+    currentLightboxView = "fasad";
+  }
+  resetLightboxZoom();
+  updateLightboxContent();
+}
+
+function openCardLightbox(btn, typeKey) {
+  const card = document.querySelector(`.unit-card[data-type="${typeKey}"]`);
+  if (!card) return;
+  const imgEl = card.querySelector(".unit-img");
+  const isDenah = imgEl && imgEl.classList.contains("is-denah");
+  const view = isDenah ? "denah" : "fasad";
+  openLightbox(null, null, typeKey, view);
+}
+
+function zoomLightbox(factor) {
+  const lbImg = document.getElementById("lightboxImg");
+  if (!lbImg) return;
+  currentLightboxZoom = Math.min(Math.max(currentLightboxZoom * factor, 0.6), 3.5);
+  lbImg.style.transform = `scale(${currentLightboxZoom})`;
+}
+
+function resetLightboxZoom() {
+  const lbImg = document.getElementById("lightboxImg");
+  currentLightboxZoom = 1;
+  if (lbImg) lbImg.style.transform = "scale(1)";
+}
+
+// Keyboard arrow navigation listener for Lightbox
+document.addEventListener("keydown", (e) => {
+  const lbModal = document.getElementById("modalLightbox");
+  if (!lbModal || !lbModal.classList.contains("active")) return;
+  
+  if (e.key === "ArrowRight") {
+    lightboxNav(1);
+  } else if (e.key === "ArrowLeft") {
+    lightboxNav(-1);
+  } else if (e.key === "+" || e.key === "=") {
+    zoomLightbox(1.25);
+  } else if (e.key === "-") {
+    zoomLightbox(0.8);
+  } else if (e.key === "0") {
+    resetLightboxZoom();
+  }
+});
+
 // ================= DETAIL TYPE MODAL =================
 function switchModalImg(viewType) {
   currentModalView = viewType;
@@ -215,17 +364,20 @@ function switchModalImg(viewType) {
   const imgEl = document.getElementById("mImg");
   const tabFasadBtn = document.getElementById("tabFasadBtn");
   const tabDenahBtn = document.getElementById("tabDenahBtn");
+  const containerEl = document.querySelector(".modal-img-container");
 
   if (viewType === "denah") {
     imgEl.src = data.floorplanImg;
     imgEl.alt = `Denah Ukuran ${data.dimension} - ${data.title}`;
     if (tabDenahBtn) tabDenahBtn.classList.add("active");
     if (tabFasadBtn) tabFasadBtn.classList.remove("active");
+    if (containerEl) containerEl.classList.add("denah-view");
   } else {
     imgEl.src = data.img;
     imgEl.alt = `Fasad ${data.title}`;
     if (tabFasadBtn) tabFasadBtn.classList.add("active");
     if (tabDenahBtn) tabDenahBtn.classList.remove("active");
+    if (containerEl) containerEl.classList.remove("denah-view");
   }
 }
 
@@ -252,17 +404,25 @@ function openDetailModal(typeKey, initialView = "fasad") {
 
   document.getElementById("mLb").innerText = data.lb;
   document.getElementById("mLt").innerText = data.lt;
+
+  const mDimensiVal = document.getElementById("mDimensiVal");
+  if (mDimensiVal) mDimensiVal.innerText = data.dimension;
+
+  const mSl = document.getElementById("mSl");
+  if (mSl) {
+    if (data.sisaLahan) {
+      mSl.innerText = "Ada (+)";
+      mSl.style.color = "var(--gold-light)";
+    } else {
+      mSl.innerText = "Optimal";
+      mSl.style.color = "var(--text-muted)";
+    }
+  }
+
   document.getElementById("mKt").innerText = data.kt;
   document.getElementById("mKm").innerText = data.km;
   document.getElementById("mRk").innerText = data.rk || "1";
   document.getElementById("mDp").innerText = data.dapur || "1";
-  
-  const sisaLahanContainer = document.getElementById("mSisaLahanContainer");
-  if (data.sisaLahan) {
-    sisaLahanContainer.style.display = "flex";
-  } else {
-    sisaLahanContainer.style.display = "none";
-  }
 
   // Populate Specs List
   const specListEl = document.querySelector(".spec-tech-list");
